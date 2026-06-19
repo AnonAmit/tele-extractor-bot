@@ -198,6 +198,12 @@ class Extractor:
                         self.progress.is_canceled = True
                         return {"success": False, "error": "Extraction canceled"}
                     
+                    # Zip Slip prevention: sanitize filename
+                    safe_path = os.path.normpath(file)
+                    if safe_path.startswith("..") or safe_path.startswith("/"):
+                        logger.warning(f"Rejected path traversal attempt: {file}")
+                        raise Exception(f"Unsafe file path in archive: {file}")
+                    
                     self.progress.current_file = file
                     self.progress.extracted_files = i + 1
                     self.progress.percentage = int((i + 1) / len(files) * 100)

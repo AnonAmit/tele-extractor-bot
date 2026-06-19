@@ -234,11 +234,20 @@ async def extraction_error(user_id, error_message):
     # Clean up
     del active_extractions[user_id]
 
-async def handle_password(update: Update, context: CallbackContext, user_id, password):
+async def handle_password(update: Update, context: CallbackContext, user_id):
     """Handle password entry for password-protected archives"""
     if user_id not in active_extractions:
         await update.callback_query.message.reply_text(
             "⚠️ No active extraction found. Please upload a file first.",
+            parse_mode=ParseMode.MARKDOWN
+        )
+        return
+    
+    # Retrieve password from conversation context
+    password = context.user_data.pop("archive_password", "")
+    if not password:
+        await update.callback_query.message.reply_text(
+            "⚠️ No password provided. Please try again.",
             parse_mode=ParseMode.MARKDOWN
         )
         return
