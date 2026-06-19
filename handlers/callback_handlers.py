@@ -126,7 +126,10 @@ async def handle_password_input(update: Update, context: CallbackContext):
     # Delete the message with the password for security
     await update.message.delete()
     
-    await handle_password(update, context, user_id, password)
+    # Store password in user_data instead of passing through callbacks
+    context.user_data["archive_password"] = password
+    
+    await handle_password(update, context, user_id)
     
     return ConversationHandler.END
 

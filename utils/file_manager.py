@@ -55,6 +55,12 @@ class FileManager:
             }
         except Exception as e:
             logger.error(f"File download error: {str(e)}")
+            # Clean up partial download if it exists
+            if 'local_path' in dir() and os.path.exists(local_path):
+                try:
+                    os.remove(local_path)
+                except OSError:
+                    pass
             return {
                 "success": False,
                 "error": f"Error downloading file: {str(e)}"
